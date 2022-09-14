@@ -1,0 +1,14 @@
+{
+    "1": {
+        "ip": "localhost",
+        "snmpv": "0",
+        "comunidad": "Escom",
+        "puerto": "161"
+    },
+    "2": {
+        "ip": "192.168.1.71",
+        "snmpv": "0",
+        "comunidad": "Escom",
+        "puerto": "161"
+    }
+}

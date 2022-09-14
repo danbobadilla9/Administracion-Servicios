@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./CSS/style.css">
+</head>
+<body>
+    <div class="header">
+        <div><img src="/home/user/Documentos/Administracion-Servicios-Red/Practica-1/img/ipn.png" alt="Logo IPN"></div>
+        <div class="header__title">
+            <p>Instituto Politecnico Nacional</p>
+            <p>Escuela Superior De Computo</p>
+        </div>
+        <div><img class="escom" src="/home/user/Documentos/Administracion-Servicios-Red/Practica-1/img/escom.png" alt="Logo ESCOM"></div>
+    </div>
+
+    <div class="contenedor">
+        <div class="contenedor__tile">
+            <h1>Administración de Servicios en Red</h1>
+            <h2>Práctica 1</h2>
+            <h2>Bobadilla Segundo Dan Israel </h2>
+        </div>
+        <div class="datos">
+            <h1>Mostrando información del agente seleccionado</h1>
+            <p>Sistema Operativo: {{sistema}}</p>
+            <img class="escom"  {{logo}} alt="Logo">
+            <p>Nombre del dispositivo: {{nombreDispositivo}}</p>
+            <p>información de contacto: {{contacto}}</p>
+            <p>Ubicación: {{ubicacion}}</p>
+            <p>Número de interfaces: {{numeroI}}</p>
+            {{tabla}}
+        </div>
+        
+    </div>
+
+</body>
+</html>
