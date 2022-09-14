@@ -3,7 +3,7 @@ from distutils.log import info
 import PeticionesSNMP
 import json
 import PDF
-
+import codecs
 def registrados():
     file = open("./json/db.json","r")
     js = json.loads(file.read())
@@ -11,14 +11,21 @@ def registrados():
         print("\t Mostrando dispositivos conocidos \n")
         for agentes in js:
             print("Agente: "+agentes)
-            # for key, info in js[agentes].items():
-            #     print(key,info)
-            # print("\n")
             cantInter = PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.1.0")
             print("3) Numero de interfaces de red: "+cantInter)
             print("4) Estado administrativo y descripción de sus interfaces de red \n")
+            datos = PeticionesSNMP.resumen(js[agentes],'1.3.6.1.2.1.1.1.0').split(' ')
+            bandera = False
+            if datos[1] != "Linux":
+                bandera = True
             for i in range(1,int(cantInter)+1):
-                print("Interfaz: "+str(i)+" Desc: "+PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.2.1.2."+str(i))+"\nEstado: "+("Interfaz Desactivada","Interfaz Activa")[int(PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.2.1.8."+str(i))) == 1]+"\n")
+                if bandera :
+                    desc = PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.2.1.2."+str(i))
+                    binary_str = codecs.decode(desc[3:], "hex")
+                    desc = str(binary_str,'utf-8')
+                else:
+                    desc = PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.2.1.2."+str(i))
+                print("Interfaz: "+str(i)+" Desc: "+desc+"\nEstado: "+("Interfaz Desactivada","Interfaz Activa")[int(PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.2.1.8."+str(i))) == 1]+"\n")
             print("\n")
             lastIndex = agentes
         return (int(lastIndex),js)
@@ -56,12 +63,14 @@ def generarReporte(js):
     datos = PeticionesSNMP.resumen(agente,'1.3.6.1.2.1.1.1.0').split(' ')
     cantInter = PeticionesSNMP.resumen(agente,"1.3.6.1.2.1.2.1.0")
     info = {}
+    bandera = False
     if datos[1] == "Linux":
         info['logo'] = 'src="/home/user/Documentos/Administracion-Servicios-Red/Practica-1/img/linux.png"'
         info['sistema'] = datos[1]
     else:
         info['logo'] = 'src="/home/user/Documentos/Administracion-Servicios-Red/Practica-1/img/windows.png"'
         info['sistema'] = 'Windows'
+        bandera = True
     info['nombreDispositivo'] = PeticionesSNMP.resumen(agente,'1.3.6.1.2.1.1.5.0')
     info['contacto'] = PeticionesSNMP.resumen(agente,'1.3.6.1.2.1.1.4.0')
     info['ubicacion'] = PeticionesSNMP.resumen(agente,'1.3.6.1.2.1.1.6.0')
@@ -69,7 +78,12 @@ def generarReporte(js):
     tabla = ""
     for i in range(1,int(cantInter)+1):
         encabe = f'<tr><th>Interfaz {i} </th><th>Estado</th></tr>'
-        desc = PeticionesSNMP.resumen(agente,"1.3.6.1.2.1.2.2.1.2."+str(i))
+        if bandera :
+            desc = PeticionesSNMP.resumen(agente,"1.3.6.1.2.1.2.2.1.2."+str(i))
+            binary_str = codecs.decode(desc[3:], "hex")
+            desc = str(binary_str,'utf-8')
+        else:
+            desc = PeticionesSNMP.resumen(agente,"1.3.6.1.2.1.2.2.1.2."+str(i))
         estado = ("Interfaz Desactivada","Interfaz Activa")[int(PeticionesSNMP.resumen(agente,"1.3.6.1.2.1.2.2.1.8."+str(i))) == 1]
         cuerpo = f'<tr><td>Descripción: {desc} </td><td>{estado}</td></tr>'
         divTabla = f'<div><table class="demo"><thead>{encabe}</thead><tbody>{cuerpo}</tbody></table><div/>'
