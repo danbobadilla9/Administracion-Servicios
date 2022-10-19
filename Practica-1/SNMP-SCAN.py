@@ -10,10 +10,10 @@ def registrados():
     if js :
         print("\t Mostrando dispositivos conocidos \n")
         for agentes in js:
-            print("Agente: "+agentes)
+            #print("Agente: "+agentes)
             cantInter = PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.1.0")
-            print("3) Numero de interfaces de red: "+cantInter)
-            print("4) Estado administrativo y descripción de sus interfaces de red \n")
+            #print("3) Numero de interfaces de red: "+cantInter)
+            #print("4) Estado administrativo y descripción de sus interfaces de red \n")
             datos = PeticionesSNMP.resumen(js[agentes],'1.3.6.1.2.1.1.1.0').split(' ')
             bandera = False
             if datos[1] != "Linux":
@@ -25,8 +25,8 @@ def registrados():
                     desc = str(binary_str,'utf-8')
                 else:
                     desc = PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.2.1.2."+str(i))
-                print("Interfaz: "+str(i)+" Desc: "+desc+"\nEstado: "+("Interfaz Desactivada","Interfaz Activa")[int(PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.2.1.8."+str(i))) == 1]+"\n")
-            print("\n")
+                #print("Interfaz: "+str(i)+" Desc: "+desc+"\nEstado: "+("Interfaz Desactivada","Interfaz Activa")[int(PeticionesSNMP.resumen(js[agentes],"1.3.6.1.2.1.2.2.1.8."+str(i))) == 1]+"\n")
+            #print("\n")
             lastIndex = agentes
         return (int(lastIndex),js)
     else:
