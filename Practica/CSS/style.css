@@ -1,0 +1,77 @@
+html {
+    font-size: 62.5%;
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+.header{
+    width: 100rem;
+    height: fit-content;
+    margin: 0 auto;
+    padding-left: 10rem;
+    padding-right: 10rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    border-bottom: 0.2rem black solid;
+}
+
+img {
+    max-width: 20rem;
+}
+
+.escom{
+    max-width: 15rem;
+}
+.escom-Sub{
+    max-width: 70rem;
+}
+.header__title{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5rem;
+}
+
+.header__title p {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.contenedor{
+    width: 100%;
+    text-align: center;
+}
+.contenedor__tile{
+    margin: 0 auto;
+}
+.contenedor__tile h1{
+    font-size: 2rem;
+    font-weight: 700;
+}
+.contenedor__tile h2{
+    font-size: 1.5rem;
+}
+.datos p{
+    font-size: 2rem;
+}
+.datos .demo {
+    border:0.2rem solid #000000;
+    border-collapse:colapso;
+    padding:5px;
+    font-size: 1.5rem;
+    margin: 1rem auto;
+}
+.datos .demo th {
+    border:0.2rem solid #000000;
+    padding:5px;
+    background:#F0F0F0;
+}
+.datos .demo td {
+    border:0.2rem solid #000000;
+    padding:5px;
+}
