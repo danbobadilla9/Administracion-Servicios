@@ -4,11 +4,5 @@
         "snmpv": "0",
         "comunidad": "DanIsrael",
         "puerto": "161"
-    },
-    "2": {
-        "ip": "192.168.132.207",
-        "snmpv": "0",
-        "comunidad": "Escom",
-        "puerto": "161"
     }
 }

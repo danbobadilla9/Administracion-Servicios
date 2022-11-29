@@ -5,29 +5,42 @@ import rrdtool
 import os
 from pysnmp.hlapi import *
 from copy import copy
-
+import Notify
 def updateSNMP(data,index):
     while 1:
-        paquetesMulticast = int(
-            consultaSNMP(data["comunidad"],data["ip"],
-                        '1.3.6.1.2.1.2.2.1.17.1'))
-        paquetesIp = int(
-            consultaSNMP(data["comunidad"],data["ip"],
-                        '1.3.6.1.2.1.4.10.0'))
-        icmpEnviados = int(
-            consultaSNMP(data["comunidad"],data["ip"],
-                        '1.3.6.1.2.1.5.1.0'))
-        tcpTransmitidos = int(
-            consultaSNMP(data["comunidad"],data["ip"],
-                        '1.3.6.1.2.1.6.12.0'))
-        datagramasEnviados = int(
-            consultaSNMP(data["comunidad"],data["ip"],
-                        '1.3.6.1.2.1.7.4.0'))
+        cpu1 = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.3.3.1.2.196608'))
+        cpu2 = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.3.3.1.2.196609'))
+        cpu3 = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.3.3.1.2.196610'))
+        cpu4 = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.3.3.1.2.196611'))
+        if( (cpu1+cpu2+cpu3+cpu4) > 200 ):
+            Notify.send_alert_attached("CPU SOBRECARGADO ALV")
+        RAM = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.4.1.2021.4.6.0'))
+        if(RAM  > 2500000):
+            Notify.send_alert_attached("RAM SOBRECARGADA ALV")
         
-        valor = "N:" + str(paquetesMulticast) + ':' + str(paquetesIp) + ':' + str(icmpEnviados) + ':' + str(tcpTransmitidos) + ':' + str(datagramasEnviados)
+        DISCO = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.2.3.1.6.1'))
+        if(DISCO > 6447204):
+            Notify.send_alert_attached("DISCO SOBRECARGADA ALV")
+        # paquetesMulticast = int(
+        #     consultaSNMP(data["comunidad"],data["ip"],
+        #                 '1.3.6.1.2.1.2.2.1.17.1'))
+        # paquetesIp = int(
+        #     consultaSNMP(data["comunidad"],data["ip"],
+        #                 '1.3.6.1.2.1.4.10.0'))
+        # icmpEnviados = int(
+        #     consultaSNMP(data["comunidad"],data["ip"],
+        #                 '1.3.6.1.2.1.5.1.0'))
+        # tcpTransmitidos = int(
+        #     consultaSNMP(data["comunidad"],data["ip"],
+        #                 '1.3.6.1.2.1.6.12.0'))
+        # datagramasEnviados = int(
+        #     consultaSNMP(data["comunidad"],data["ip"],
+        #                 '1.3.6.1.2.1.7.4.0'))
+        
+        # valor = "N:" + str(paquetesMulticast) + ':' + str(paquetesIp) + ':' + str(icmpEnviados) + ':' + str(tcpTransmitidos) + ':' + str(datagramasEnviados)
         # print (valor)
-        rrdtool.update(str(index)+'.rrd', valor)
-    # rrdtool.dump('traficoRED.rrd','traficoRED.xml')
+        # rrdtool.update(str(index)+'.rrd', valor)
+        # rrdtool.dump('traficoRED.rrd','traficoRED.xml')
         time.sleep(1)
 
     if ret:
