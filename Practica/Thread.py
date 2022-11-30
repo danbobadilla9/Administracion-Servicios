@@ -6,41 +6,54 @@ import os
 from pysnmp.hlapi import *
 from copy import copy
 import Notify
+import trendGraphDetection
 def updateSNMP(data,index):
     while 1:
         cpu1 = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.3.3.1.2.196608'))
         cpu2 = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.3.3.1.2.196609'))
         cpu3 = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.3.3.1.2.196610'))
         cpu4 = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.3.3.1.2.196611'))
-        if( (cpu1+cpu2+cpu3+cpu4) > 200 ):
-            Notify.send_alert_attached("CPU SOBRECARGADO ALV")
+        
         RAM = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.4.1.2021.4.6.0'))
-        if(RAM  > 2500000):
-            Notify.send_alert_attached("RAM SOBRECARGADA ALV")
+        
         
         DISCO = int (consultaSNMP(data["comunidad"],data["ip"],'1.3.6.1.2.1.25.2.3.1.6.1'))
-        if(DISCO > 6447204):
-            Notify.send_alert_attached("DISCO SOBRECARGADA ALV")
-        # paquetesMulticast = int(
-        #     consultaSNMP(data["comunidad"],data["ip"],
-        #                 '1.3.6.1.2.1.2.2.1.17.1'))
-        # paquetesIp = int(
-        #     consultaSNMP(data["comunidad"],data["ip"],
-        #                 '1.3.6.1.2.1.4.10.0'))
-        # icmpEnviados = int(
-        #     consultaSNMP(data["comunidad"],data["ip"],
-        #                 '1.3.6.1.2.1.5.1.0'))
-        # tcpTransmitidos = int(
-        #     consultaSNMP(data["comunidad"],data["ip"],
-        #                 '1.3.6.1.2.1.6.12.0'))
-        # datagramasEnviados = int(
-        #     consultaSNMP(data["comunidad"],data["ip"],
-        #                 '1.3.6.1.2.1.7.4.0'))
         
-        # valor = "N:" + str(paquetesMulticast) + ':' + str(paquetesIp) + ':' + str(icmpEnviados) + ':' + str(tcpTransmitidos) + ':' + str(datagramasEnviados)
+        paquetesMulticast = int(
+            consultaSNMP(data["comunidad"],data["ip"],
+                        '1.3.6.1.2.1.2.2.1.17.1'))
+        paquetesIp = int(
+            consultaSNMP(data["comunidad"],data["ip"],
+                        '1.3.6.1.2.1.4.10.0'))
+        icmpEnviados = int(
+            consultaSNMP(data["comunidad"],data["ip"],
+                        '1.3.6.1.2.1.5.1.0'))
+        tcpTransmitidos = int(
+            consultaSNMP(data["comunidad"],data["ip"],
+                        '1.3.6.1.2.1.6.12.0'))
+        datagramasEnviados = int(
+            consultaSNMP(data["comunidad"],data["ip"],
+                        '1.3.6.1.2.1.7.4.0'))
+        
+        valor = "N:" + str(paquetesMulticast) + ':' + str(paquetesIp) + ':' + str(icmpEnviados) + ':' + str(tcpTransmitidos) + ':' + str(datagramasEnviados)+':'+str(cpu1+cpu2+cpu3+cpu4)+':'+str(RAM)+':'+str(DISCO)
         # print (valor)
-        # rrdtool.update(str(index)+'.rrd', valor)
+        rrdtool.update(str(index)+'.rrd', valor)
         # rrdtool.dump('traficoRED.rrd','traficoRED.xml')
+        if( (cpu1+cpu2+cpu3+cpu4) > 200 ):
+            ultima_actualizacion = rrdtool.lastupdate("./1.rrd")
+            timestamp=ultima_actualizacion['date'].timestamp()
+            trendGraphDetection.generarGrafica(int(timestamp),"CPU SOBRECARGADO","CPUload")
+            Notify.send_alert_attached("CPU SOBRECARGADO")
+        if(RAM  > 2800000):
+            ultima_actualizacion = rrdtool.lastupdate("./1.rrd")
+            timestamp=ultima_actualizacion['date'].timestamp()
+            trendGraphDetection.generarGrafica(int(timestamp),"RAM SOBRECARGADA","RAM")
+            Notify.send_alert_attached("RAM SOBRECARGADA")
+        if(DISCO > 6447204):
+            ultima_actualizacion = rrdtool.lastupdate("./1.rrd")
+            timestamp=ultima_actualizacion['date'].timestamp()
+            trendGraphDetection.generarGrafica(int(timestamp),"DISCO SOBRECARGADO","DISCO")
+            Notify.send_alert_attached("DISCO SOBRECARGADA")
         time.sleep(1)
 
     if ret:
@@ -84,11 +97,17 @@ def createDB(data,index):
                         "DS:icmpEntrada:COUNTER:120:U:U",
                         "DS:segmentosSalida:COUNTER:120:U:U",
                         "DS:datagramasSalida:COUNTER:120:U:U",
+                        "DS:CPUload:GAUGE:60:0:100",
+                        "DS:RAM:GAUGE:60:0:100",
+                        "DS:DISCO:GAUGE:60:0:100",
                         "RRA:AVERAGE:0.5:1:200",
                         "RRA:AVERAGE:0.5:1:200",
                         "RRA:AVERAGE:0.5:1:200",
                         "RRA:AVERAGE:0.5:1:200",
-                        "RRA:AVERAGE:0.5:1:200")
+                        "RRA:AVERAGE:0.5:1:200",
+                        "RRA:AVERAGE:0.5:1:24",
+                        "RRA:AVERAGE:0.5:1:24",
+                        "RRA:AVERAGE:0.5:1:24")
         if ret:
             print (rrdtool.error())
     else:

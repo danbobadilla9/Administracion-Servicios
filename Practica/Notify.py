@@ -1,11 +1,12 @@
 import smtplib
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 COMMASPACE = ', '
 # Define params
-imgpath = '/home/user/Documentos/Administracion-Servicios-Red/Ejercicio-Umbral/'
+rrdpath = '/home/user/Documentos/Administracion-Servicios-Red/Ejercicio-Umbral/'
+imgpath = './'
+fname = 'trend.rrd'
 
 mailsender = "danbobadilla8@gmail.com"
 mailreceip = "danbobadilla8@gmail.com"
@@ -19,8 +20,10 @@ def send_alert_attached(subject):
     msg['Subject'] = subject
     msg['From'] = mailsender
     msg['To'] = mailreceip
-    mensaje = MIMEText(subject,"plain")
-    msg.attach(mensaje)
+    fp = open(imgpath+'deteccion.png', 'rb')
+    img = MIMEImage(fp.read())
+    fp.close()
+    msg.attach(img)
     s = smtplib.SMTP(mailserver)
 
     s.starttls()
